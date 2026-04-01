@@ -1,0 +1,33 @@
+name: Generate Model Chart
+
+on:
+  schedule:
+    - cron: "0 0 * * *"
+  workflow_dispatch:
+
+jobs:
+  build-and-commit:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Dependencies
+        run: pip install requests matplotlib
+
+      - name: Run Vibe Generator
+        run: python scripts/generate_svg.py
+
+      - name: Commit and Push SVG
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore: update arena leaderboard svg [skip ci]"
+          file_pattern: "top_models.svg"
